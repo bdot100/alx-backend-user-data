@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
-a function called filter_datum that returns the log message obfuscated:
+A function called filter_datum that returns the log message obfuscated.
 """
+
 import re
-from typing import List
 import logging
+import os
+import mysql.connector
+from typing import List
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
@@ -12,17 +15,16 @@ PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 def filter_datum(fields: List[str], redaction: str, message: str,
                  separator: str) -> str:
     """
-    This function returns the log message obfuscated:
+    This function returns the log message obfuscated.
     """
     for field in fields:
-        message = re.sub(field+'=.*?'+separator,
-                         field+'='+redaction+separator, message)
+        message = re.sub(field + '=.*?' + separator,
+                         field + '=' + redaction + separator, message)
     return message
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter class
-        """
+    """Redacting Formatter class"""
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
@@ -34,11 +36,11 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """
-        this function redact the message of LogRecord instance
+        This function redacts the message of LogRecord instance.
         Args:
-        record (logging.LogRecord): LogRecord instance containing message
+        record (logging.LogRecord): LogRecord instance containing message.
         Return:
-            formatted string
+            Formatted string.
         """
         message = super(RedactingFormatter, self).format(record)
         redacted = filter_datum(self.fields, self.REDACTION,
@@ -48,7 +50,7 @@ class RedactingFormatter(logging.Formatter):
 
 def get_logger() -> logging.Logger:
     """
-    function that takes no arguments and returns a logging.Logger
+    Function that takes no arguments and returns a logging.Logger
     object.
     """
     logger = logging.getLogger("user_data")
@@ -62,3 +64,18 @@ def get_logger() -> logging.Logger:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Function to get a database connection.
+    """
+    user = os.getenv('PERSONAL_DATA_DB_USERNAME') or "root"
+    passwd = os.getenv('PERSONAL_DATA_DB_PASSWORD') or ""
+    host = os.getenv('PERSONAL_DATA_DB_HOST') or "localhost"
+    db_name = os.getenv('PERSONAL_DATA_DB_NAME')
+    connect = mysql.connector.connect(user=user,
+                                      password=passwd,
+                                      host=host,
+                                      database=db_name)
+    return connect
