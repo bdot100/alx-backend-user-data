@@ -13,7 +13,6 @@ class Auth:
         """Returns: False"""
         return False
 
-
     def authorization_header(self, request=None) -> str:
         """Returns: None"""
         return None
