@@ -36,9 +36,9 @@ def authorized() -> str:
 
 
 @app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
-def authorized() -> str:
-    """ GET /api/v1/unauthorized
+def forbidden() -> str:
+    """ GET /api/v1/forbidden
     Return:
-      - Unauthorized Request
+      - Forbidden Request
     """
     abort(403, description="Unauthorized")
