@@ -3,6 +3,7 @@
 This class will manage the API authentication through
 basic auth.
 """
+import base64
 from flask import request
 from typing import List, TypeVar
 from api.v1.auth.auth import Auth
@@ -32,3 +33,26 @@ class BasicAuth(Auth):
         ):
             return None
         return authorization_header.split(" ")[-1]
+    
+    def decode_base64_authorization_header(self, base64_authorization_header: str)\
+            -> str:
+        """
+        This Function Decodes the value of a Base64 string 
+        base64_authorization_header.
+
+        Args:
+            base64_authorization_header (str): The Base64 authorization header.
+
+        Returns:
+            str: The decoded value as UTF8 string.
+        """
+        if (
+            base64_authorization_header is None
+            or not isinstance(base64_authorization_header, str)
+        ):
+            return None
+        try:
+            decoded = base64.b64decode(base64_authorization_header).decode('utf-8')
+            return decoded
+        except Exception as e:
+            return None
