@@ -46,9 +46,6 @@ def before_request():
         if auth.authorization_header(request) is None and cookie is None:
             abort(401, description="Unauthorized")
 
-        if auth.session_cookie(request) is None:
-            abort(401, description="Unauthorized")
-
         if auth.current_user(request) is None:
             abort(403, description="Forbidden")
 
