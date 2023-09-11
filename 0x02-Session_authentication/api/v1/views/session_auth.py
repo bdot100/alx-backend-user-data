@@ -3,7 +3,7 @@
 view that handles all routes for the Session
 authentication.
 """
-from flask import Flask, Blueprint, request, jsonify, make_response
+from flask import abort, request, jsonify
 from api.v1.views import app_views
 from models.user import User
 import os
@@ -47,3 +47,15 @@ def auth_session():
             response_data.set_cookie(session_name, session_id)
             return response_data, 200
         return jsonify({"error": "wrong password"}), 401
+
+
+@app_views.route('/auth_session/logout', methods=['DELETE'],
+                 strict_slashes=False)
+def handle_logout():
+    """
+    This route Handles user logout
+    """
+    from api.v1.app import auth
+    if auth.destroy_session(request):
+        return jsonify({}), 200
+    abort(404)
