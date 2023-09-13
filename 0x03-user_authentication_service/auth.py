@@ -4,6 +4,7 @@
 """
 import bcrypt
 
+
 def _hash_password(password: str) -> bytes:
     """
     This Method Hashes the input password using
