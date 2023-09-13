@@ -92,3 +92,31 @@ class Auth:
         except NoResultFound:
             # If no user is found, return False
             return False
+
+    def create_session(self, email: str) -> str:
+        """
+        This Method Creates a new session for the
+        user with the given email.
+
+        Args:
+            email (str): The user's email.
+
+        Returns:
+            str: The generated session ID as a string.
+        """
+        try:
+            # Find the user by email
+            user = self._db.find_user_by(email=email)
+
+            # Generate a new session ID
+            session_id = _generate_uuid()
+
+            # Update the user's session ID in the database
+            self._db.update_user(user.id, session_id=session_id)
+
+            # Return the generated session ID
+            return session_id
+        except NoResultFound:
+            # If no user is found, raise an exception or return
+            # an error message
+            return None
