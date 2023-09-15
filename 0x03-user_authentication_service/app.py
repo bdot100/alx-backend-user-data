@@ -45,6 +45,7 @@ def register_user():
         }
         return jsonify(response), 400
 
+
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login():
     """This method log in user if the credential is correct
