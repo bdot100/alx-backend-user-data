@@ -121,7 +121,28 @@ def profile() -> str:
 
     except ValueError as e:
         # Handle any other exceptions or validation errors as needed
-        abort(400)  # Bad Request
+        abort(400)  # Bad
+
+
+@app.route("/reset_password", methods=["POST"], strict_slashes=False)
+def get_reset_password_token():
+    """This route generates a reset password token
+    """
+    try:
+        # Parse form data to retrieve the email field
+        email = request.form.get("email")
+
+        # Generate a reset password token for the user
+        reset_token = AUTH.get_reset_password_token(email)
+
+        # If the reset password token is generated successfully, respond with a 200 HTTP status
+        # and a JSON payload containing the email and reset token
+        response = jsonify({"email": f"{email}", "reset_token": f"{reset_token}"})
+        return response, 200
+
+    except ValueError as e:
+        # Handle the case where the email is not registered (raises a ValueError)
+        abort(403)  # Forbidden
 
 
 if __name__ == "__main__":
