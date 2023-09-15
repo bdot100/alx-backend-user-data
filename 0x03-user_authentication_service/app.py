@@ -135,13 +135,18 @@ def get_reset_password_token():
         # Generate a reset password token for the user
         reset_token = AUTH.get_reset_password_token(email)
 
-        # If the reset password token is generated successfully, respond with a 200 HTTP status
+        # If the reset password token is generated successfully,
+        # respond with a 200 HTTP status
         # and a JSON payload containing the email and reset token
-        response = jsonify({"email": f"{email}", "reset_token": f"{reset_token}"})
+        response = jsonify({
+                "email": f"{email}",
+                "reset_token": f"{reset_token}"
+        })
         return response, 200
 
     except ValueError as e:
-        # Handle the case where the email is not registered (raises a ValueError)
+        # Handle the case where the email is not registered
+        # (raises a ValueError)
         abort(403)  # Forbidden
 
 
