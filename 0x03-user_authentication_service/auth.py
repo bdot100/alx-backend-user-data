@@ -183,3 +183,32 @@ class Auth:
         except NoResultFound:
             # If no user is found, raise a ValueError
             raise ValueError("User not found for the provided email")
+
+    def update_password(self, reset_token: str, password: str) -> None:
+        """
+        This Method Update the user's password based on a reset token.
+
+        Args:
+            reset_token (str): The reset token used to locate the user.
+            password (str): The new password to set for the user.
+        """
+        try:
+            # Find the user by reset token
+            user = self._db.find_user_by(reset_token=reset_token)
+
+            # Hash the new password
+            hashed_password = bcrypt.hashpw(
+                password.encode('utf-8'),
+                bcrypt.gensalt()
+            )
+
+            # Update the user's hashed_password field with the new
+            # hashed password and the reset_token field to None
+            self._db.update_user(
+                user.id,
+                hashed_password=hashed_password,
+                reset_token=None
+            )
+        except NoResultFound:
+            # If no user is found (based on reset token), raise a ValueError
+            raise ValueError("Invalid reset token")
