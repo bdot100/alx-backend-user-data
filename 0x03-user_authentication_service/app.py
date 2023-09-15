@@ -5,7 +5,8 @@ from flask import (
     Flask,
     jsonify,
     request,
-    abort
+    abort,
+    redirect
 )
 from auth import Auth
 app = Flask(__name__)
@@ -67,6 +68,31 @@ def login():
         response = jsonify({"email": f"{email}", "message": "logged in"})
         response.set_cookie("session_id", session_id)
         return response
+    except ValueError as e:
+        # Handle any other exceptions or validation errors as needed
+        abort(400)  # Bad Request
+
+
+@app.route("/sessions", methods=["DELETE"])
+def logout():
+    """This route logout a user and destroy their session"""
+    try:
+        # Retrieve the session ID from the cookie
+        session_id = request.cookies.get("session_id")
+
+        # Find the user with the provided session ID
+        user = AUTH.get_user_from_session_id(session_id)
+
+        if user is not None:
+            # If the user exists, destroy the session
+            AUTH.destroy_session(user.id)
+
+            # Redirect the user to the GET "/" route
+            return redirect("/")
+
+        # If the user does not exist, respond with a 403 HTTP status
+        abort(403)
+
     except ValueError as e:
         # Handle any other exceptions or validation errors as needed
         abort(400)  # Bad Request
