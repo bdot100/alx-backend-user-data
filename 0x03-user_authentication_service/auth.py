@@ -141,3 +141,18 @@ class Auth:
         except NoResultFound:
             # If no user is found, return None
             return None
+
+    def destroy_session(self, user_id: int) -> None:
+        """
+        This Method Set the session ID of the corresponding user to None.
+
+        Args:
+            user_id (int): The ID of the user for whom to destroy the session.
+        """
+        try:
+            # Update the user's session ID to None
+            self._db.update_user(user_id, session_id=None)
+        except NoResultFound:
+            # Handle the case where no user is found based on the user_id
+            return None
+        return None
