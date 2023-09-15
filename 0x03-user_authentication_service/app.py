@@ -73,7 +73,7 @@ def login():
         abort(400)  # Bad Request
 
 
-@app.route("/sessions", methods=["DELETE"])
+@app.route("/sessions", methods=["DELETE"], strict_slashes=False)
 def logout():
     """This route logout a user and destroy their session"""
     try:
@@ -91,6 +91,31 @@ def logout():
             return redirect("/")
 
         # If the user does not exist, respond with a 403 HTTP status
+        abort(403)
+
+    except ValueError as e:
+        # Handle any other exceptions or validation errors as needed
+        abort(400)  # Bad Request
+
+
+
+@app.route("/profile", methods=["GET"], strict_slashes=False)
+def profile() -> str:
+    """This route is used to get profile of the user
+    """
+    try:
+        # Retrieve the session ID from the cookie
+        session_id = request.cookies.get("session_id")
+
+        # Find the user with the provided session ID
+        user = AUTH.get_user_from_session_id(session_id)
+
+        if user is not None:
+            # If the user exists, respond with a 200 HTTP status and the user's email
+            response = jsonify({"email": f"{user.email}"})
+            return response, 200
+
+        # If the session ID is invalid or the user does not exist, respond with a 403 HTTP status
         abort(403)
 
     except ValueError as e:
