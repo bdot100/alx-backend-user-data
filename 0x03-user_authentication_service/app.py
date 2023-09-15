@@ -98,7 +98,6 @@ def logout():
         abort(400)  # Bad Request
 
 
-
 @app.route("/profile", methods=["GET"], strict_slashes=False)
 def profile() -> str:
     """This route is used to get profile of the user
@@ -111,11 +110,13 @@ def profile() -> str:
         user = AUTH.get_user_from_session_id(session_id)
 
         if user is not None:
-            # If the user exists, respond with a 200 HTTP status and the user's email
+            # If the user exists, respond with a 200 HTTP
+            # status and the user's email
             response = jsonify({"email": f"{user.email}"})
             return response, 200
 
-        # If the session ID is invalid or the user does not exist, respond with a 403 HTTP status
+        # If the session ID is invalid or the user does not exist,
+        # respond with a 403 HTTP status
         abort(403)
 
     except ValueError as e:
