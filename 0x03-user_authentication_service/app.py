@@ -4,7 +4,8 @@
 from flask import (
     Flask,
     jsonify,
-    request
+    request,
+    abort
 )
 from auth import Auth
 app = Flask(__name__)
@@ -43,6 +44,31 @@ def register_user():
             "message": "email already registered"
         }
         return jsonify(response), 400
+
+@app.route("/sessions", methods=["POST"], strict_slashes=False)
+def login():
+    """This method log in user if the credential is correct
+    """
+    try:
+        # Parse form data to retrieve email and password
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        # Check if the provided login information is correct
+        if not AUTH.valid_login(email, password):
+            # If login information is incorrect, respond with a 401 HTTP status
+            abort(401)
+
+        # If login is correct, create a new session for the user
+        session_id = AUTH.create_session(email)
+
+        # Store the session ID as a cookie on the response
+        response = jsonify({"email": f"{email}", "message": "logged in"})
+        response.set_cookie("session_id", session_id)
+        return response
+    except ValueError as e:
+        # Handle any other exceptions or validation errors as needed
+        abort(400)  # Bad Request
 
 
 if __name__ == "__main__":
